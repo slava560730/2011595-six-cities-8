@@ -1,0 +1,99 @@
+{
+  "api": {
+    "titles": [
+      "Nice, cozy, warm big bed apartment",
+      "Tile House",
+      "Loft Studio in the Central",
+      "The Pondhouse - A Magical Place",
+      "Canal View Prinsengracht"
+    ],
+    "descriptions": [
+      "Design interior in most sympathetic area! Complitely renovated, well-equipped, cosy studio in idyllic, over 100 years old wooden house. Calm street, fast connection to center and airport.",
+      "Peaceful studio in the most wanted area in town. Quiet house Near of everything. Completely renovated. Lovely neighbourhood, lot of trendy shops, restaurants and bars in a walking distance.",
+      "Discover daily local life in city center, friendly neighborhood, clandestine casino, karaoke, old-style artisans, art gallery and artist studio downstairs.",
+      "I rent out a very sunny and bright apartment only 7 minutes walking distance to the metro station. The apartment has a spacious living room with a kitchen, one bedroom and a bathroom with mit bath. A terrace can be used in summer.",
+      "I am happy to welcome you to my apartment in the city center! Three words: location, cosy and chic!"
+    ],
+    "cities": [
+      "Amsterdam",
+      "Brussels",
+      "Hamburg",
+      "Cologne",
+      "Dusseldorf"
+    ],
+    "previewImages": [
+      "https://16.design.htmlacademy.pro/static/hotel/17.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/20.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/21.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/6.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/11.jpg"
+    ],
+    "images": [
+      "https://16.design.htmlacademy.pro/static/hotel/16.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/13.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/11.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/20.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/6.jpg",
+      "https://16.design.htmlacademy.pro/static/hotel/8.jpg"
+    ],
+    "booleanValues": [
+      "true",
+      "false"
+    ],
+    "types": [
+      "house",
+      "room",
+      "apartment",
+      "hotel"
+    ],
+    "goods": [
+      "Breakfast",
+      "false",
+      "Air conditioning",
+      "Laptop friendly workspace",
+      "Baby seat",
+      "Washer",
+      "Towels",
+      "Fridge"
+    ],
+    "firstnames": [
+      "Dmitry",
+      "Elena",
+      "Irina",
+      "Egor",
+      "Aleksander",
+      "Svetlana"
+    ],
+    "emails": [
+      "student@yandex.ru",
+      "stranger@mail.ru",
+      "hero@gmail.com",
+      "happy@.mail.ru",
+      "victory@yandex.ru",
+      "huge@gmail.com"
+    ],
+    "avatarPaths": [
+      "https://16.design.htmlacademy.pro/static/host/avatar-angelina.jpg",
+      "https://16.design.htmlacademy.pro/static/host/avatar-max.jpg"
+    ],
+    "passwords": [
+      "password1",
+      "password2",
+      "password3",
+      "password4",
+      "password5"
+    ],
+    "typeUsers": [
+      "ordinary",
+      "pro"
+    ],
+    "locations": [
+      "48.85661;2.351499",
+      "50.938361;6.959974",
+      "50.846557;4.351697",
+      "52.370216;4.895168",
+      "53.550341;10.000654",
+      "51.225402;6.776314"
+    ]
+  }
+}

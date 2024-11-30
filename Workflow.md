@@ -89,3 +89,8 @@ npm start
 npm run ts ./src/main.cli.ts -- --import <path-to-mock>
 ./dist/main.cli.js --help
 chmod u+x ./dist/main.cli.js
+firstnames
+
+npm run ts ./src/main.cli.ts -- --import ./mocks/test-data.tsv
+npm run ts ./src/main.cli.ts -- --generate 100 ./mocks/test-data.tsv http://localhost:3123/api
+

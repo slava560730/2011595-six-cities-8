@@ -1,8 +1,8 @@
-import { City } from './city.type.js';
-import { Goods } from './goods.type.js';
-import { Location } from './location.type.js';
-import { OfferType } from './offer-type.type.js';
-import { User } from './user.type.js';
+import {City} from './city.type.js';
+import {Goods} from './goods.type.js';
+import {Location} from './location.type.js';
+import {OfferType} from './offer-type.type.js';
+import {User} from './user.type.js';
 
 export type OfferPreview = {
   title: string;//наименование
@@ -17,11 +17,11 @@ export type OfferPreview = {
 };
 export type Offer = OfferPreview & {
   description: string;//описание
-  postDate:Date;//дата публикации
+  postDate: Date;//дата публикации
   bedrooms: number;//количество комнат
   goods: Goods[];//удобства
   user: User;//пользователь
   images: string[];//фотографии жилья
   maxAdults: number;//Количество гостей
-  reviewsCount :number;//количество отзывов
+  reviewsCount: number;//количество отзывов
 };
