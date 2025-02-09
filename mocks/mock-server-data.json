@@ -41,14 +41,13 @@
       "false"
     ],
     "types": [
-      "house",
-      "room",
-      "apartment",
-      "hotel"
+      "House",
+      "Room",
+      "Apartment",
+      "Hotel"
     ],
     "goods": [
       "Breakfast",
-      "false",
       "Air conditioning",
       "Laptop friendly workspace",
       "Baby seat",
@@ -75,13 +74,6 @@
     "avatarPaths": [
       "https://16.design.htmlacademy.pro/static/host/avatar-angelina.jpg",
       "https://16.design.htmlacademy.pro/static/host/avatar-max.jpg"
-    ],
-    "passwords": [
-      "password1",
-      "password2",
-      "password3",
-      "password4",
-      "password5"
     ],
     "typeUsers": [
       "ordinary",

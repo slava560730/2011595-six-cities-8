@@ -42,14 +42,13 @@ export class TSVOfferGenerator implements OfferGenerator {
     const authorName = getRandomItem<string>(this.mockData.firstnames);
     const email = getRandomItem<string>(this.mockData.emails);
     const avatarPath = getRandomItem<string>(this.mockData.avatarPaths);
-    const password = getRandomItem<string>(this.mockData.passwords);
     const typeUser = getRandomItem<string>(this.mockData.typeUsers);
     const reviewsCount = generateRandomValue(MIN_REVIEWS_COUNT, MAX_REVIEWS_COUNT).toString();
     const location = getRandomItem<string>(this.mockData.locations);
 
     return [
       title, description, postDate, city, previewImage, images, isPremium, isFavorite,
-      rating, type, rooms, maxAdults, price, goods, authorName, email, avatarPath, password, typeUser, reviewsCount, location,
+      rating, type, rooms, maxAdults, price, goods, authorName, email, avatarPath, typeUser, reviewsCount, location,
     ].join('\t');
   }
 }

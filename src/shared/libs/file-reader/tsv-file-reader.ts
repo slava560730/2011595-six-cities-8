@@ -15,6 +15,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
   }
 
   private parseLineToOffer(line: string): Offer {
+
     const [
       title,
       description,
@@ -33,7 +34,6 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       firstname,
       email,
       avatarPath,
-      password,
       typeUser,
       reviewsCount,
       location
@@ -54,7 +54,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       maxAdults: Number.parseInt(maxAdults, 10),
       price: Number.parseInt(price, 10),
       goods: this.parseGoods(goods),
-      user: this.parseUser(firstname, email, avatarPath, password, typeUser as TypeUser),
+      user: this.parseUser(firstname, email, avatarPath, typeUser as TypeUser),
       reviewsCount: Number.parseInt(reviewsCount, 10),
       location: this.parseLocation(location)
     };
@@ -73,8 +73,8 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return imagesString.split(';').map((name) => name);
   }
 
-  private parseUser(firstname: string, email: string, avatarPath: string, password: string, type: TypeUser): User {
-    return {firstname, email, avatarPath, password, type};
+  private parseUser(firstname: string, email: string, avatarPath: string, type: TypeUser): User {
+    return {firstname, email, avatarPath, type};
   }
 
   public async read(): Promise<void> {
@@ -96,7 +96,10 @@ export class TSVFileReader extends EventEmitter implements FileReader {
         importedRowCount++;
 
         const parsedOffer = this.parseLineToOffer(completeRow);
-        this.emit('line', parsedOffer);
+
+        await new Promise((resolve) => {
+          this.emit('line', parsedOffer, resolve);
+        });
       }
     }
 

@@ -93,4 +93,4 @@ firstnames
 
 npm run ts ./src/main.cli.ts -- --import ./mocks/test-data.tsv
 npm run ts ./src/main.cli.ts -- --generate 100 ./mocks/test-data.tsv http://localhost:3123/api
-
+npm run ts ./src/main.cli.ts -- --import .\mocks\test-data.tsv admin test localhost six-cities secret

@@ -29,6 +29,7 @@
     "pino-pretty": "11.0.0",
     "rimraf": "5.0.1",
     "ts-node": "10.9.2",
+    "tslib": "2.6.2",
     "typescript": "5.4.5"
   },
   "type": "module",
@@ -37,14 +38,15 @@
     "npm": ">=10"
   },
   "dependencies": {
+    "@typegoose/typegoose": "12.4.0",
     "convict": "6.2.4",
     "convict-format-with-validator": "6.2.0",
     "dayjs": "1.11.10",
     "dotenv": "16.4.5",
     "got": "14.2.1",
     "inversify": "6.0.2",
+    "mongoose": "8.3.4",
     "pino": "9.0.0",
-    "reflect-metadata": "0.2.2",
-    "tslib": "2.6.2"
+    "reflect-metadata": "0.2.2"
   }
 }
