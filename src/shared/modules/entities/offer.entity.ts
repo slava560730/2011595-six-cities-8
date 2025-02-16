@@ -1,7 +1,6 @@
-import {defaultClasses, getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
+import {defaultClasses, modelOptions, prop, Ref} from '@typegoose/typegoose';
 import {City, Goods, Location, OfferType} from '../../types/index.js';
-
-import {UserEntity} from '../user/index.js';
+import {UserEntity} from './user.entity.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {
@@ -70,4 +69,3 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public location!: Location;
 }
 
-export const OfferModel = getModelForClass(OfferEntity);

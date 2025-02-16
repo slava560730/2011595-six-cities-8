@@ -1,9 +1,9 @@
 import {User} from '../../types/index.js';
-import {defaultClasses, getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
+import {defaultClasses, modelOptions, prop, Ref} from '@typegoose/typegoose';
 import {TypeUser} from '../../types/user.type.js';
 import {createSHA256} from '../../helpers/index.js';
-import {OfferEntity} from '../offer/index.js';
 import {DEFAULT_USER_AVATAR} from '../../const/common.js';
+import {OfferEntity} from './offer.entity.js';
 
 const EMAIL_REG_EXP = /^[^:;,\\[\]<>()\s@]+@[^\s@]+\.\w+$/;
 
@@ -19,6 +19,17 @@ export interface UserEntity extends defaultClasses.Base {}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class UserEntity extends defaultClasses.TimeStamps implements User {
+  constructor(userData: User, password:string, salt:string) {
+    super();
+
+    this.email = userData.email;
+    this.avatarPath = userData.avatarPath;
+    this.firstname = userData.firstname;
+    this.type = userData.type;
+
+    this.setPassword(password, salt);
+  }
+
   @prop({ unique: true, required: true, match: EMAIL_REG_EXP })
   public email: string;
 
@@ -40,17 +51,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   })
   public favorites?: Ref<OfferEntity>[];
 
-  constructor(userData: User, password:string, salt:string) {
-    super();
-
-    this.email = userData.email;
-    this.avatarPath = userData.avatarPath;
-    this.firstname = userData.firstname;
-    this.type = userData.type;
-
-    this.setPassword(password, salt);
-  }
-
   public setPassword(password: string, salt: string) {
     this.password = createSHA256(password, salt);
   }
@@ -60,4 +60,3 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   }
 }
 
-export const UserModel = getModelForClass(UserEntity);

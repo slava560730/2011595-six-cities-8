@@ -4,7 +4,6 @@ import {DocumentType, types} from '@typegoose/typegoose';
 import {OfferService} from './offer-service.interface.js';
 import {City, Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
-import {OfferEntity} from './offer.entity.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {SortType} from '../../types/sort-type.enum.js';
@@ -12,6 +11,7 @@ import {authorAggregation, commentAggregation, favoriteAggregation} from './offe
 import {CommentService} from '../comment/index.js';
 import {Types} from 'mongoose';
 import {MAX_PREMIUN_COUNT} from './offer.constant.js';
+import {OfferEntity} from '../entities/index.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {

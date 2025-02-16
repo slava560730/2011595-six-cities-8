@@ -1,9 +1,9 @@
 import {DocumentType} from '@typegoose/typegoose';
 
 import {CreateOfferDto} from './dto/create-offer.dto.js';
-import {OfferEntity} from './offer.entity.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {City} from '../../types/index.js';
+import {OfferEntity} from '../entities/index.js';
 
 export interface OfferService {
   //Получение списка предложений по аренде.

@@ -2,28 +2,24 @@ import {Command} from './command.interface.js';
 import {TSVFileReader} from '../../shared/libs/file-reader/index.js';
 import {getErrorMessage, getMongoURI} from '../../shared/helpers/index.js';
 import {DefaultUserService, UserService} from '../../shared/modules/user/index.js';
-import {DefaultOfferService, OfferModel, OfferService} from '../../shared/modules/offer/index.js';
+import {DefaultOfferService, OfferService} from '../../shared/modules/offer/index.js';
 import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
 import {Logger} from '../../shared/libs/logger/index.js';
 import {ConsoleLogger} from '../../shared/libs/logger/console.logger.js';
-import {UserModel} from '../../shared/modules/user/user.entity.js';
 import {Offer} from '../../shared/types/index.js';
 import {DEFAULT_USER_PASSWORD} from './command.constant.js';
 import {Config, RestConfig, RestSchema} from '../../shared/libs/config/index.js';
-import {
-  CommentModel,
-  CommentService,
-  DefaultCommentService
-} from '../../shared/modules/comment/index.js';
+import {CommentService, DefaultCommentService} from '../../shared/modules/comment/index.js';
+import {CommentModel, OfferModel, UserModel} from '../../shared/modules/entities/index.js';
 
 export class ImportCommand implements Command {
-  private userService: UserService;
-  private offerService: OfferService;
-  private databaseClient: DatabaseClient;
-  private logger: Logger;
-  private salt: string;
-  private config!: Config<RestSchema>;
+  private userService!: UserService;
+  private offerService!: OfferService;
   private commentService!: CommentService;
+  private databaseClient!: DatabaseClient;
+  private logger!: Logger;
+  private salt!: string;
+  private config!: Config<RestSchema>;
 
   constructor() {
     this.onImportedOffer = this.onImportedOffer.bind(this);
@@ -31,9 +27,9 @@ export class ImportCommand implements Command {
 
     this.logger = new ConsoleLogger();
     this.config = new RestConfig(this.logger);
-    this.commentService = new DefaultCommentService(this.logger,CommentModel);
     this.offerService = new DefaultOfferService(this.logger, OfferModel, this.commentService);
     this.userService = new DefaultUserService(this.logger, UserModel, this.offerService);
+    this.commentService = new DefaultCommentService(this.logger,CommentModel);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
@@ -64,7 +60,7 @@ export class ImportCommand implements Command {
       price: offer.price,
       goods: offer.goods,
       userId: user.id,
-      reviewsCount: offer.reviewsCount,
+      reviewsCount: 0,
       location: offer.location,
       comments: [],
     });

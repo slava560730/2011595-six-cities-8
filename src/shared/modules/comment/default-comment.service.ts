@@ -4,10 +4,10 @@ import {DocumentType, types} from '@typegoose/typegoose';
 import {CommentService} from './comment-service.interface.js';
 import {Component} from '../../types/index.js';
 import {Logger} from '../../libs/logger/index.js';
-import {CommentEntity} from './comment.entity.js';
 import {CreateCommentDto} from './dto/create-comment.dto.js';
 import {DEFAULT_COMMENT_COUNT} from './comment.constant.js';
 import {SortType} from '../../types/sort-type.enum.js';
+import {CommentEntity} from '../entities/index.js';
 
 @injectable()
 export class DefaultCommentService implements CommentService {
