@@ -9,13 +9,12 @@ export class CreateOfferDto {
   public isPremium: boolean;
   public isFavorite: boolean;
   public rating: number;
-  public bedrooms: number;
+  public roomsCount: number;
   public maxAdults: number;
   public price: number;
   public city: City;
   public goods: Goods[];
   public type: OfferType;
-  public user: string;
   public comments: string[];
   public reviewsCount: number;
   public location: Location;

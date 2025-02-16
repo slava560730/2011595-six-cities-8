@@ -18,7 +18,7 @@ export type OfferPreview = {
 export type Offer = OfferPreview & {
   description: string;//описание
   postDate: Date;//дата публикации
-  bedrooms: number;//количество комнат
+  roomsCount: number;//количество комнат
   goods: Goods[];//удобства
   user: User;//пользователь
   images: string[];//фотографии жилья

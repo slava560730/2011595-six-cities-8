@@ -16,16 +16,8 @@ async function bootstrap() {
   );
 
   const application = appContainer.get<RestApplication>(Component.RestApplication);
-  // const user = appContainer.get<UserService>(Component.UserService);
-  await application.init();
 
-  // await user.create({
-  //   email: 'pvv56@mail.ru',
-  //   type: TypeUser.Pro,
-  //   firstname: 'sdsd',
-  //   avatarPath: 'asdsa',
-  //   password: 'sad11212sd',
-  // }, "hhhhh");
+  await application.init();
 }
 
 bootstrap();

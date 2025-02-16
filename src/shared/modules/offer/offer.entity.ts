@@ -1,8 +1,7 @@
 import {defaultClasses, getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
-
 import {City, Goods, Location, OfferType} from '../../types/index.js';
+
 import {UserEntity} from '../user/index.js';
-import {CommentEntity} from '../comment/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {
@@ -39,7 +38,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public rating!: number;
 
   @prop({required: true})
-  public bedrooms!: number;
+  public roomsCount!: number;
 
   @prop({required: true})
   public maxAdults!: number;
@@ -59,14 +58,10 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public type!: OfferType;
 
   @prop({
-    ref: () => UserEntity, required: true
+    ref: () => UserEntity,
+    required: true
   })
-  public user!: Ref<UserEntity>;
-
-  @prop({
-    ref: () => CommentEntity, required: true, default: [],
-  })
-  public comments!: Ref<CommentEntity>[];
+  public userId!: Ref<UserEntity>;
 
   @prop({default: 0})
   public reviewsCount!: number;

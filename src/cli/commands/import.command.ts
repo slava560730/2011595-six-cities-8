@@ -8,7 +8,13 @@ import {Logger} from '../../shared/libs/logger/index.js';
 import {ConsoleLogger} from '../../shared/libs/logger/console.logger.js';
 import {UserModel} from '../../shared/modules/user/user.entity.js';
 import {Offer} from '../../shared/types/index.js';
-import {DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {Config, RestConfig, RestSchema} from '../../shared/libs/config/index.js';
+import {
+  CommentModel,
+  CommentService,
+  DefaultCommentService
+} from '../../shared/modules/comment/index.js';
 
 export class ImportCommand implements Command {
   private userService: UserService;
@@ -16,14 +22,18 @@ export class ImportCommand implements Command {
   private databaseClient: DatabaseClient;
   private logger: Logger;
   private salt: string;
+  private config!: Config<RestSchema>;
+  private commentService!: CommentService;
 
   constructor() {
     this.onImportedOffer = this.onImportedOffer.bind(this);
     this.onCompleteImport = this.onCompleteImport.bind(this);
 
     this.logger = new ConsoleLogger();
-    this.offerService = new DefaultOfferService(this.logger, OfferModel);
-    this.userService = new DefaultUserService(this.logger, UserModel);
+    this.config = new RestConfig(this.logger);
+    this.commentService = new DefaultCommentService(this.logger,CommentModel);
+    this.offerService = new DefaultOfferService(this.logger, OfferModel, this.commentService);
+    this.userService = new DefaultUserService(this.logger, UserModel, this.offerService);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
@@ -49,11 +59,11 @@ export class ImportCommand implements Command {
       isFavorite: offer.isFavorite,
       rating: offer.rating,
       type: offer.type,
-      bedrooms: offer.bedrooms,
+      roomsCount: offer.roomsCount,
       maxAdults: offer.maxAdults,
       price: offer.price,
       goods: offer.goods,
-      user: user.id,
+      userId: user.id,
       reviewsCount: offer.reviewsCount,
       location: offer.location,
       comments: [],
@@ -70,7 +80,7 @@ export class ImportCommand implements Command {
   }
 
   public async execute(filename: string, login: string, password: string, host: string, dbname: string, salt: string): Promise<void> {
-    const uri = getMongoURI(login, password, host, DEFAULT_DB_PORT, dbname);
+    const uri = getMongoURI(login, password, host, this.config.get('DB_PORT'), dbname);
     this.salt = salt;
 
     await this.databaseClient.connect(uri);
