@@ -405,14 +405,14 @@ paths:
         "400":
           description: "Неверный формат параметров"
 
-  /comments/{offerId}:
+  /comments:
     get:
       tags:
         - comments
       summary: Список комментариев для предложения
       description: Возвращает список комментариев для предложения.
       parameters:
-        - in: path
+        - in: query
           name: offerId
           required: true
           schema:
@@ -439,7 +439,7 @@ paths:
       summary: Добавление комментария
       description: Добавление комментария для предложения.
       parameters:
-        - in: path
+        - in: query
           name: offerId
           required: true
           schema:
