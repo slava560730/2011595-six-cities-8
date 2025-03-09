@@ -372,6 +372,34 @@ paths:
         "404":
           description: Не существует предложения для удаления.
 
+  /offers/{offerId}/comments:
+    get:
+      tags:
+        - offers
+      summary: Список комментариев для предложения
+      description: Возвращает список комментариев для предложения.
+      parameters:
+        - in: path
+          name: offerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Показ всех комментариев к предложению. Объект со списком комментариев.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
+        "400":
+          description: Не верный формат идентификатора предложения
+
+        "404":
+          description: Комментариев к текущему предложению не найдены.
+
 
   /offers/premium:
     get:
@@ -406,32 +434,6 @@ paths:
           description: "Неверный формат параметров"
 
   /comments:
-    get:
-      tags:
-        - comments
-      summary: Список комментариев для предложения
-      description: Возвращает список комментариев для предложения.
-      parameters:
-        - in: query
-          name: offerId
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Показ всех комментариев к предложению. Объект со списком комментариев.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/comment'
-
-        "400":
-          description: Не верный формат идентификатора предложения
-
-        "404":
-          description: Комментариев к текущему предложению не найдены.
 
     post:
       tags:
@@ -693,6 +695,10 @@ components:
           type: boolean
           example: true
 
+        isFavorite:
+          type: boolean
+          example: true
+
         rating:
           type: number
           example: 4.4
@@ -738,9 +744,8 @@ components:
               - "Fridge"
             example: Towels
 
-        userId:
-          type: string
-          format: uuid
+        user:
+          $ref: '#/components/schemas/user'
 
         reviewsCount:
           type: number

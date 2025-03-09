@@ -51,7 +51,7 @@ export const commentAggregation = [
           input: '$comments',
           initialValue: {sum: 0},
           in: {
-            sum: {$add: ['$$value.sum', '$$this.rating']}
+            sum: {$add: ['$$value.sum', { $toInt: '$$this.rating' }]}
           }
         }
       }
@@ -62,13 +62,13 @@ export const commentAggregation = [
       rating: {
         $cond: {
           if: {
-            $ne: ['reviewsCount', 0]
+            $gt: ['$reviewsCount', 0]
           },
           then: {
             $round: [{
               $divide: [
                 '$commentRatingSum.sum',
-                'reviewsCount'
+                {$toInt: '$reviewsCount'}
               ]
             }, MAX_NUM_AFTER_DIGIT]
           },
@@ -101,6 +101,6 @@ export const commentCountAggregation = [{
     as: 'comments'
   },
 },
-  {id: {$toString: '$_id'}, commentCount: {$size: '$comments'}},
-  {$unset: 'comments'}
+{id: {$toString: '$_id'}, commentCount: {$size: '$comments'}},
+{$unset: 'comments'}
 ];

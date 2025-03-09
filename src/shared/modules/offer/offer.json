@@ -1,0 +1,21 @@
+{
+  "title": "Tile House",
+  "description": "I rent out a very sunny and bright apartment only 7 minutes walking distance to the metro station. The apartment has a spacious living room with a kitchen, one bedroom and a bathroom with mit bath. A terrace can be used in summer.",
+  "postDate": "2025-01-13T18:44:32",
+  "previewImage": "https://16.design.htmlacademy.pro/static/hotel/20.jpg",
+  "images": ["https://16.design.htmlacademy.pro/static/hotel/11.jpg","https://16.design.htmlacademy.pro/static/hotel/12.jpg"],
+  "isPremium": true,
+  "isFavorite": false,
+  "rating": 0,
+  "roomsCount": 5,
+  "maxAdults": 4,
+  "price": 9954,
+  "city": "Brussels",
+  "goods": ["Washer","Towels"],
+  "type": "Hotel",
+  "reviewsCount": 0,
+  "location":
+    "latitude":48.85661,
+    "longitude":2.351499
+  }
+}

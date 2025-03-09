@@ -10,7 +10,7 @@ import {SortType} from '../../types/sort-type.enum.js';
 import {authorAggregation, commentAggregation, favoriteAggregation} from './offer.aggregation.js';
 import {CommentService} from '../comment/index.js';
 import {Types} from 'mongoose';
-import {MAX_PREMIUN_COUNT} from './offer.constant.js';
+import {DEFAULT_OFFER_COUNT, MAX_PREMIUM_OFFER_COUNT} from './offer.constant.js';
 import {OfferEntity} from '../entities/index.js';
 
 @injectable()
@@ -22,12 +22,12 @@ export class DefaultOfferService implements OfferService {
   }
 
   //Получение списка предложений по аренде.
-  public async find(limit: number, userId: string): Promise<DocumentType<OfferEntity>[]> {
+  public async find(userId: string, limit?: number,): Promise<DocumentType<OfferEntity>[]> {
     return this.offerModel
       .aggregate([
         ...authorAggregation,
         ...favoriteAggregation(userId),
-        {$limit: limit},
+        {$limit: limit ?? DEFAULT_OFFER_COUNT},
         {$sort: {reviewsCount: SortType.DESC}} //Сортировка по количеству комментариев.
       ]).exec();
   }
@@ -102,7 +102,7 @@ export class DefaultOfferService implements OfferService {
       ...commentAggregation,
       ...favoriteAggregation(userId),
       {$sort: {createdAt: SortType.DESC}},
-      {$limit: MAX_PREMIUN_COUNT},
+      {$limit: MAX_PREMIUM_OFFER_COUNT},
     ]);
   }
 

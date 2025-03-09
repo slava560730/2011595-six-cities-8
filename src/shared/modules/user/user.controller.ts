@@ -1,7 +1,13 @@
 import {inject, injectable} from 'inversify';
 import {Request, Response} from 'express';
 
-import {BaseController, HttpError, HttpMethod} from '../../libs/rest/index.js';
+import {
+  BaseController,
+  DocumentExistsMiddleware,
+  HttpError,
+  HttpMethod,
+  ValidateObjectIdMiddleware
+} from '../../libs/rest/index.js';
 import {Logger} from '../../libs/logger/index.js';
 import {Component} from '../../types/index.js';
 import {CreateUserRequest} from './create-user-request.type.js';
@@ -11,24 +17,45 @@ import {StatusCodes} from 'http-status-codes';
 import {fillDTO} from '../../helpers/index.js';
 import {UserRdo} from './rdo/user.rdo.js';
 import {LoginUserRequest} from './login-user-request.type.js';
+import {ValidateDtoMiddleware} from '../../libs/rest/middleware/validate-dto.middleware.js';
+import {CreateUserDto} from './dto/create-user.dto.js';
+import {LoginUserDto} from './dto/login-user.dto.js';
+import {OfferService} from '../offer/index.js';
+import {
+  DocumentBodyExistsMiddleware
+} from '../../libs/rest/middleware/document-body-exists.middleware.js';
+import {UploadFileMiddleware} from '../../libs/rest/middleware/upload-file.middleware.js';
 
 @injectable()
 export class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
 
-    this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.create });
-    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
-    this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.showStatus });
-    this.addRoute({ path: '/:userId/favorites', method: HttpMethod.Get, handler: this.showUserFavorites });
-    this.addRoute({ path: '/:userId/favorites', method: HttpMethod.Post, handler: this.addFavoriteForUser });
-    this.addRoute({ path: '/:userId/favorites', method: HttpMethod.Delete, handler: this.deleteFavoriteForUser });
-
+    this.addRoute({
+      path: '/register', method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDto)] });
+    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login, middlewares: [new ValidateDtoMiddleware(LoginUserDto)] });
+    this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.checkAuth });
+    this.addRoute({ path: '/favorites', method: HttpMethod.Get, handler: this.findFavoritesForUser, middlewares: [new ValidateObjectIdMiddleware('userId')] });
+    this.addRoute({ path: '/favorites', method: HttpMethod.Post, handler: this.addFavoriteForUser, middlewares: [new ValidateObjectIdMiddleware('userId'), new DocumentBodyExistsMiddleware(this.offerService, 'Offer', 'offerId')] });
+    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Delete, handler: this.deleteFavoriteForUser, middlewares: [new ValidateObjectIdMiddleware('userId'),
+      new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')] });
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
   }
 
   public async create(
@@ -70,7 +97,7 @@ export class UserController extends BaseController {
     );
   }
 
-  public async showStatus(): Promise<void> {
+  public async checkAuth(): Promise<void> {
     throw new HttpError(
       StatusCodes.NOT_IMPLEMENTED,
       'Not implemented',
@@ -78,10 +105,10 @@ export class UserController extends BaseController {
     );
   }
 
-  public async showUserFavorites(req: Request, res: Response) {
+  public async findFavoritesForUser(req: Request, res: Response) {
     const { userId } = req.params;
 
-    const existsUser = await this.userService.findById(String(userId));
+    const existsUser = await this.userService.findById(userId);
 
     if (!existsUser) {
       throw new HttpError(
@@ -91,24 +118,15 @@ export class UserController extends BaseController {
       );
     }
 
-    const user = await this.userService.findFavoritesForUser(String(userId));
+    const user = await this.userService.findFavoritesForUser(userId);
     this.ok(res, fillDTO(UserRdo, user));
   }
 
-  // TODO: Можно написать DTO для params
   public async addFavoriteForUser(req: Request, res: Response) {
     const { userId } = req.params;
     const { offerId } = req.body;
 
-    if (!offerId) {
-      throw new HttpError(
-        StatusCodes.BAD_REQUEST,
-        'OfferId is required field',
-        'UserController',
-      );
-    }
-
-    const existsUser = await this.userService.findById(String(userId));
+    const existsUser = await this.userService.findById(userId);
 
     if (!existsUser) {
       throw new HttpError(
@@ -118,7 +136,7 @@ export class UserController extends BaseController {
       );
     }
 
-    const updatedUser = await this.userService.addFavorite(String(userId), offerId);
+    const updatedUser = await this.userService.addFavorite(userId, offerId);
     this.ok(res, fillDTO(UserRdo, updatedUser));
   }
 
@@ -126,15 +144,7 @@ export class UserController extends BaseController {
     const { userId } = req.params;
     const { offerId } = req.body;
 
-    if (!offerId) {
-      throw new HttpError(
-        StatusCodes.BAD_REQUEST,
-        'OfferId is required field',
-        'UserController',
-      );
-    }
-
-    const existsUser = await this.userService.findById(String(userId));
+    const existsUser = await this.userService.findById(userId);
 
     if (!existsUser) {
       throw new HttpError(
@@ -144,8 +154,14 @@ export class UserController extends BaseController {
       );
     }
 
-    const updatedUser = await this.userService.deleteFavorite(String(userId), offerId);
+    const updatedUser = await this.userService.deleteFavorite(userId, offerId);
     this.ok(res, fillDTO(UserRdo, updatedUser));
+  }
+
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }
 
