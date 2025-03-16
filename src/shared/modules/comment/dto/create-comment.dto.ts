@@ -1,5 +1,5 @@
 import {COMMENT_DTO_CONSTRAINTS} from '../comment.constant.js';
-import {IsInt, IsMongoId, IsString, Length, Max, Min} from 'class-validator';
+import {IsInt, IsString, Length, Max, Min} from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
@@ -11,6 +11,5 @@ export class CreateCommentDto {
   @Max(COMMENT_DTO_CONSTRAINTS.RATING.MAX_VALUE)
   public rating!: number;
 
-  @IsMongoId()
   public offerId!: string;
 }
