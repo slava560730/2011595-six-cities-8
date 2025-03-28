@@ -3,6 +3,7 @@ import {
   DocumentExistsMiddleware,
   HttpError,
   HttpMethod,
+  PrivateRouteMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
 import {inject} from 'inversify';
@@ -20,6 +21,8 @@ import {RequestPremiumQuery} from './type/request-premium-query.type.js';
 import {CommentRdo, CommentService} from '../comment/index.js';
 import {ValidateDtoMiddleware} from '../../libs/rest/middleware/validate-dto.middleware.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
+import {RequestQuery} from '../../libs/rest/types/request-query.type.js';
+import {DEFAULT_OFFER_COUNT, MAX_OFFER_COUNT} from './offer.constant.js';
 
 export default class OfferController extends BaseController {
   constructor(
@@ -34,7 +37,7 @@ export default class OfferController extends BaseController {
     this.addRoute({
       path: '/', method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)]
+      middlewares: [new PrivateRouteMiddleware(),new ValidateDtoMiddleware(CreateOfferDto)]
     });
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.findPremium});
     this.addRoute({
@@ -47,13 +50,13 @@ export default class OfferController extends BaseController {
       path: '/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
-      middlewares: [new ValidateObjectIdMiddleware('offerId'), new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),]
+      middlewares: [new PrivateRouteMiddleware(),new ValidateObjectIdMiddleware('offerId'), new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),]
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
-      middlewares: [new ValidateObjectIdMiddleware('offerId'), new ValidateDtoMiddleware(UpdateOfferDto),new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),]
+      middlewares: [new PrivateRouteMiddleware(),new ValidateObjectIdMiddleware('offerId'), new ValidateDtoMiddleware(UpdateOfferDto),new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),]
     });
     this.addRoute({
       path: '/:offerId/comments',
@@ -63,22 +66,36 @@ export default class OfferController extends BaseController {
     });
   }
 
-  public async show({params}: Request<ParamOfferId>, res: Response): Promise<void> {
+  public async show({params, tokenPayload }: Request<ParamOfferId>, res: Response): Promise<void> {
     const {offerId} = params;
-    const offer = await this.offerService.findById(offerId, '');
+    const userId = tokenPayload?.sub;
+
+    const offer = await this.offerService.findById(offerId, userId);
 
     this.ok(res, fillDTO(FullOfferRdo, offer));
   }
 
+  public async index({ query, tokenPayload }: Request<unknown, unknown,unknown, RequestQuery>, res: Response) {
+    const limitNum = Number(query?.limit);
+    const limit = query?.limit && !Number.isNaN(limitNum) && limitNum < MAX_OFFER_COUNT ? limitNum : DEFAULT_OFFER_COUNT;
+    const userId = tokenPayload?.sub;
 
-  public async index(_req: Request, res: Response) {
-    const offers = await this.offerService.find('');
+    if (!Number.isSafeInteger(limit)) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Limit param is not correct.',
+        'OfferController'
+      );
+    }
 
+    const offers = await this.offerService.find(userId, limit);
     this.ok(res, fillDTO(FullOfferRdo, offers));
   }
 
-  public async create({body}: CreateOfferRequest, res: Response): Promise<void> {
-    const result = await this.offerService.create({...body, userId: '67b20b5152c6594a25c7e358'});
+  public async create({body,tokenPayload }: CreateOfferRequest, res: Response): Promise<void> {
+    const userId = tokenPayload?.sub;
+
+    const result = await this.offerService.create({...body, userId});
     const offer = await this.offerService.findById(result.id, '');
 
     this.created(res, fillDTO(FullOfferRdo, offer));
@@ -97,13 +114,15 @@ export default class OfferController extends BaseController {
     body,
     params
   }: Request<ParamOfferId, unknown, UpdateOfferDto>, res: Response): Promise<void> {
-    const updatedOffer = await this.offerService.updateById(params.offerId, body);
+    const offerId = String(params?.offerId);
+    const updatedOffer = await this.offerService.updateById(offerId, body);
 
     this.ok(res, fillDTO(FullOfferRdo, updatedOffer));
   }
 
-  public async findPremium({query}: Request<unknown, unknown, unknown, RequestPremiumQuery>, res: Response): Promise<void> {
+  public async findPremium({ query, tokenPayload }: Request<unknown, unknown, unknown, RequestPremiumQuery>, res: Response): Promise<void> {
     const city = query?.city;
+    const userId = tokenPayload?.sub;
 
     if (!city) {
       throw new HttpError(
@@ -121,7 +140,7 @@ export default class OfferController extends BaseController {
       );
     }
 
-    const offers = await this.offerService.findByPremium(city as City, '');
+    const offers = await this.offerService.findByPremium(city as City, userId);
     const responseData = fillDTO(FullOfferRdo, offers);
     this.ok(res, responseData);
   }

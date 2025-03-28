@@ -6,6 +6,7 @@ import {
   DocumentExistsMiddleware,
   HttpError,
   HttpMethod,
+  PrivateRouteMiddleware,
   ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
 import {Logger} from '../../libs/logger/index.js';
@@ -25,6 +26,8 @@ import {
   DocumentBodyExistsMiddleware
 } from '../../libs/rest/middleware/document-body-exists.middleware.js';
 import {UploadFileMiddleware} from '../../libs/rest/middleware/upload-file.middleware.js';
+import {AuthService} from '../auth/index.js';
+import {LoggedUserRdo} from './rdo/logged-user.rdo.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -33,6 +36,7 @@ export class UserController extends BaseController {
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
+    @inject(Component.AuthService) private readonly authService: AuthService,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
@@ -42,10 +46,9 @@ export class UserController extends BaseController {
       handler: this.create,
       middlewares: [new ValidateDtoMiddleware(CreateUserDto)] });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login, middlewares: [new ValidateDtoMiddleware(LoginUserDto)] });
-    this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.checkAuth });
-    this.addRoute({ path: '/favorites', method: HttpMethod.Get, handler: this.findFavoritesForUser, middlewares: [new ValidateObjectIdMiddleware('userId')] });
-    this.addRoute({ path: '/favorites', method: HttpMethod.Post, handler: this.addFavoriteForUser, middlewares: [new ValidateObjectIdMiddleware('userId'), new DocumentBodyExistsMiddleware(this.offerService, 'Offer', 'offerId')] });
-    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Delete, handler: this.deleteFavoriteForUser, middlewares: [new ValidateObjectIdMiddleware('userId'),
+    this.addRoute({ path: '/favorites', method: HttpMethod.Get, handler: this.findFavoritesForUser, middlewares: [new PrivateRouteMiddleware(),new ValidateObjectIdMiddleware('userId')] });
+    this.addRoute({ path: '/favorites', method: HttpMethod.Post, handler: this.addFavoriteForUser, middlewares: [new PrivateRouteMiddleware(),new ValidateObjectIdMiddleware('userId'), new DocumentBodyExistsMiddleware(this.offerService, 'Offer', 'offerId')] });
+    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Delete, handler: this.deleteFavoriteForUser, middlewares: [new PrivateRouteMiddleware(),new ValidateObjectIdMiddleware('userId'),
       new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')] });
     this.addRoute({
       path: '/:userId/avatar',
@@ -55,6 +58,11 @@ export class UserController extends BaseController {
         new ValidateObjectIdMiddleware('userId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
+    });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuthenticate,
     });
   }
 
@@ -78,35 +86,20 @@ export class UserController extends BaseController {
 
   public async login(
     { body }: LoginUserRequest,
-    _res: Response,
+    res: Response,
   ): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
+    const user = await this.authService.verify(body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillDTO(LoggedUserRdo, {
+      email: user.email,
+      token,
+    });
+    this.ok(res, responseData);
 
-    if (!existsUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
-      );
-    }
-
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
-    );
   }
 
-  public async checkAuth(): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
-    );
-  }
-
-  public async findFavoritesForUser(req: Request, res: Response) {
-    const { userId } = req.params;
+  public async findFavoritesForUser({tokenPayload }: Request, res: Response) {
+    const userId = tokenPayload?.sub;
 
     const existsUser = await this.userService.findById(userId);
 
@@ -122,9 +115,9 @@ export class UserController extends BaseController {
     this.ok(res, fillDTO(UserRdo, user));
   }
 
-  public async addFavoriteForUser(req: Request, res: Response) {
-    const { userId } = req.params;
-    const { offerId } = req.body;
+  public async addFavoriteForUser({tokenPayload,body }: Request, res: Response) {
+    const userId = tokenPayload?.sub;
+    const offerId = body?.offerId;
 
     const existsUser = await this.userService.findById(userId);
 
@@ -140,9 +133,9 @@ export class UserController extends BaseController {
     this.ok(res, fillDTO(UserRdo, updatedUser));
   }
 
-  public async deleteFavoriteForUser(req: Request, res: Response) {
-    const { userId } = req.params;
-    const { offerId } = req.body;
+  public async deleteFavoriteForUser({tokenPayload,body }: Request, res: Response) {
+    const userId = tokenPayload?.sub;
+    const offerId = body?.offerId;
 
     const existsUser = await this.userService.findById(userId);
 
@@ -162,6 +155,22 @@ export class UserController extends BaseController {
     this.created(res, {
       filepath: req.file?.path
     });
+  }
+
+
+  public async checkAuthenticate({ tokenPayload }: Request, res: Response) {
+    const userId = tokenPayload?.sub;
+    const foundedUser = await this.userService.findById(userId);
+
+    if (!foundedUser) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'AuthController'
+      );
+    }
+
+    this.ok(res, fillDTO(UserRdo, foundedUser));
   }
 }
 
