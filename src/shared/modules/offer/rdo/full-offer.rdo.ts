@@ -1,10 +1,11 @@
-import {Expose, Type} from 'class-transformer';
+import {Expose, Transform, Type} from 'class-transformer';
 
 import {UserRdo} from '../../user/rdo/user.rdo.js';
 import {City, Goods, Location, OfferType} from '../../../types/index.js';
 
 export class FullOfferRdo {
   @Expose()
+  @Transform(({ obj }) => obj._id.toString())
   public id!: string;
 
   @Expose()

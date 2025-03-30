@@ -18,7 +18,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({trim: true, required: true})
   public description!: string;
 
-  @prop({required: true})
+  @prop()
   public postDate!: Date;
 
   @prop({required: true})
@@ -30,7 +30,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public isPremium!: boolean;
 
-  @prop({required: true})
+  @prop()
   public isFavorite!: boolean;
 
   @prop({required: true})

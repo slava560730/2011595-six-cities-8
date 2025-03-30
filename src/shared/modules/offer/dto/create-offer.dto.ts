@@ -43,9 +43,6 @@ export class CreateOfferDto {
   @IsBoolean()
   public isPremium: boolean;
 
-  @IsBoolean()
-  public isFavorite: boolean;
-
   @IsInt()
   @Min(OFFER_DTO_CONSTRAINTS.FLAT_COUNT.MIN_VALUE)
   @Max(OFFER_DTO_CONSTRAINTS.FLAT_COUNT.MAX_VALUE)

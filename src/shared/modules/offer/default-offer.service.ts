@@ -10,8 +10,13 @@ import {SortType} from '../../types/sort-type.enum.js';
 import {authorAggregation, commentAggregation, favoriteAggregation} from './offer.aggregation.js';
 import {CommentService} from '../comment/index.js';
 import {Types} from 'mongoose';
-import {DEFAULT_OFFER_COUNT, MAX_PREMIUM_OFFER_COUNT} from './offer.constant.js';
+import {
+  DEFAULT_OFFER_COUNT,
+  DEFAULT_OFFERS_IMAGES,
+  MAX_PREMIUM_OFFER_COUNT
+} from './offer.constant.js';
 import {OfferEntity} from '../entities/index.js';
+import {getRandomItem} from '../../helpers/index.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -34,7 +39,9 @@ export class DefaultOfferService implements OfferService {
 
   //Создание нового предложения.
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create({...dto, rating: 0});
+    const randomCategoryImage = getRandomItem(DEFAULT_OFFERS_IMAGES);
+
+    const result = await this.offerModel.create({...dto, rating: 0, previewImage:randomCategoryImage});
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result.populate('userId');

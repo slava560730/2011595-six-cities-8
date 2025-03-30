@@ -29,3 +29,13 @@ export const OFFER_DTO_CONSTRAINTS = {
     MAX_LENGTH: 6
   }
 } as const;
+
+export const DEFAULT_OFFERS_IMAGES = [
+  'apartment-01.jpg',
+  'apartment-02.jpg',
+  'apartment-03.jpg',
+  'apartment-small-03.jpg',
+  'apartment-small-04.jpg',
+  'room.jpg',
+  'room-small.jpg',
+];
