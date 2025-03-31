@@ -1,8 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 
-import { createAPI } from '../api';
-import { rootReducer } from './root-reducer';
-import { fetchOffers, fetchFavoriteOffers, fetchUserStatus } from './action';
+import {createAPI} from '../api';
+import {rootReducer} from './root-reducer';
+import {fetchFavoriteOffers, fetchOffers, fetchUserStatus} from './action';
 import history from '../history';
 
 const api = createAPI();

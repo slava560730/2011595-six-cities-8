@@ -1,8 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
-import type { SiteData } from '../../types/state';
-import { StoreSlice, SubmitStatus } from '../../const';
-import { fetchOffers, fetchOffer, fetchPremiumOffers, fetchComments, postComment, postFavorite, deleteFavorite, fetchFavoriteOffers, postOffer, editOffer } from '../action';
+import type {SiteData} from '../../types/state';
+import {StoreSlice, SubmitStatus} from '../../const';
+import {
+  deleteFavorite,
+  editOffer,
+  fetchComments,
+  fetchFavoriteOffers,
+  fetchOffer,
+  fetchOffers,
+  fetchPremiumOffers,
+  postComment,
+  postFavorite,
+  postOffer
+} from '../action';
 
 const initialState: SiteData = {
   offers: [],
@@ -26,6 +37,7 @@ export const siteData = createSlice({
         state.isOffersLoading = true;
       })
       .addCase(fetchOffers.fulfilled, (state, action) => {
+        console.log('action',action);
         state.offers = action.payload;
         state.isOffersLoading = false;
       })

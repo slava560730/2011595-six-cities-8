@@ -1,15 +1,15 @@
-import type { SortName } from '../../types/types';
+import type {SortName} from '../../types/types';
 
-import { useState } from 'react';
+import {useState} from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { setSorting } from '../../store/site-process/site-process';
+import {useAppDispatch, useAppSelector} from '../../hooks';
+import {setSorting} from '../../store/site-process/site-process';
 import Card from '../card/card';
 import Map from '../map/map';
 import SortingList from '../sorting-list/sorting-list';
 import Spinner from '../spinner/spinner';
-import { getCity, getSorting } from '../../store/site-process/selectors';
-import { getIsOffersLoading, selectOffers } from '../../store/site-data/selectors';
+import {getCity, getSorting} from '../../store/site-process/selectors';
+import {getIsOffersLoading, selectOffers} from '../../store/site-data/selectors';
 import CardListEmpty from '../card-list-empty/card-list-empty';
 
 const CardList = (): JSX.Element => {
