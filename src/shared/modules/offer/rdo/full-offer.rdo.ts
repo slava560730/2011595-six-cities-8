@@ -50,7 +50,7 @@ export class FullOfferRdo {
   @Expose()
   public goods!: Goods[];
 
-  @Expose()
+  @Expose({ name: 'user'})
   @Type(() => UserRdo)
   public user!: UserRdo;
 

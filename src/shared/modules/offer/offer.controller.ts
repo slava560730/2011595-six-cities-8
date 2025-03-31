@@ -103,6 +103,7 @@ export default class OfferController extends BaseController {
     }
 
     const offers = await this.offerService.find(userId, limit);
+
     this.ok(res, fillDTO(FullOfferRdo, offers));
   }
 

@@ -30,8 +30,8 @@ export class DefaultOfferService implements OfferService {
   public async find(userId: string, limit?: number,): Promise<DocumentType<OfferEntity>[]> {
     return this.offerModel
       .aggregate([
-        ...authorAggregation,
         ...favoriteAggregation(userId),
+        ...authorAggregation,
         {$limit: limit ?? DEFAULT_OFFER_COUNT},
         {$sort: {reviewsCount: SortType.DESC}} //Сортировка по количеству комментариев.
       ]).exec();
@@ -70,8 +70,8 @@ export class DefaultOfferService implements OfferService {
     const data = await this.offerModel.aggregate([
       {$match: {'_id': new Types.ObjectId(offerId)}},
       ...commentAggregation,
-      ...authorAggregation,
       ...favoriteAggregation(userId, offerId),
+      ...authorAggregation,
     ])
       .exec();
 
@@ -117,8 +117,8 @@ export class DefaultOfferService implements OfferService {
   public async findFavoritesByUserId(userId: string): Promise<DocumentType<OfferEntity>[]> {
     return this.offerModel
       .aggregate([
-        ...authorAggregation,
         ...favoriteAggregation(userId),
+        ...authorAggregation,
         { $match: { isFavorite: true }}
       ])
       .exec();
